@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import Exercise from "../exercise/Exercise";
+import ProgressBar from "./ProgressBar";
+import BreakingBar from "./BreakingBar";
 
 import "./ProgressBarExercise.scss"
 
@@ -20,11 +22,14 @@ export default ProgressBarExercise;
 // ----------------------------------------------------------------------------------
 
 const Solution = () => {
-  //Using hooks rather than classes for simplicity
-  const [progress, setProgress] = React.useState(0);
-  const [opacity, setOpacity] = React.useState(1);
-  const [progressTransition, setProgressTransition] = React.useState(0);
-  const [opacityTransition, setOpacityTransition] = React.useState(0);
+  //TODO: Be less naive about swapping between bars. However, this lets us swap on the fly which could be worth it.
+  const pBarRef = useRef();
+  const bBarRef = useRef();
+  let [progress, setProgress] = useState(0);
+  let [simpleBar, setSimpleBar] = useState(true); 
+
+  //Set a constant set of breakpoints
+  const breakpoints = [10,25,50,70].sort((a, b) => a - b);
 
   const startRequest = () => {
     //Button shouldn't do anything if we're still in a request
@@ -33,30 +38,38 @@ const Solution = () => {
     }
 
     //'Instantly' reset the progress bar to visible and 0
-    setOpacityTransition(0);
-    setOpacity(1);
-    setProgressTransition(0);
     setProgress(0);
+    pBarRef.current.setProgress(0,0);
+    pBarRef.current.setOpacity(1,0);
+    bBarRef.current.setProgress(0,0);
+    bBarRef.current.setOpacity(1,0);
+    
 
     //TODO: Do this more cleanly, without setTimeout.
     //'Instantly' isn't instant in react -- wait until the update has rendered
     setTimeout(() => {
-      setProgressTransition(15);
       setProgress(90);
+      pBarRef.current.setProgress(90,15);
+      bBarRef.current.setProgress(90,15);
     }, 100);
   }
   
   const finishRequest = () => {
     //Set progress bar to 100% over 1 second
-    setProgressTransition(1);
     setProgress(100);
+    pBarRef.current.setProgress(100,1);
+    bBarRef.current.setProgress(100,1, true);
 
     //TODO: Also do this without timeouts.
     //After that one second, fade the bar out over three seconds
     setTimeout(() => {
-      setOpacityTransition(3);
-      setOpacity(0);
+      pBarRef.current.setOpacity(0,3);
+      bBarRef.current.setOpacity(0,3);
     },1000);
+  }
+
+  const swapBars = () => {
+    setSimpleBar(!simpleBar);
   }
   
   const startButtonText = () => {
@@ -67,9 +80,19 @@ const Solution = () => {
     }
   }
 
+  const swapButtonText = () => {
+    if(simpleBar) {
+      return "Simple Bar";
+    } else {
+      return "Breaking Bar";
+    }
+  }
+
   return <div>
-    <div data-testid="progress-bar" className="progress-bar" style={{width: progress+"%", opacity: opacity, transition: `width ${progressTransition}s ease, opacity ${opacityTransition}s ease` }}></div>
+    <ProgressBar ref={pBarRef} hidden={!simpleBar}/>
+    <BreakingBar ref={bBarRef} breakpoints={breakpoints} hidden={simpleBar} />
     <button data-testid="start-button" className="start-button" onClick={ startRequest }>{ startButtonText() }</button>
     <button data-testid="finish-button" className="finish-button" onClick={ finishRequest }>Finish Request</button>
+    <button data-testid="swap-button" className="swap-button" onClick={ swapBars }>{ swapButtonText() }</button>
   </div>;
 };
