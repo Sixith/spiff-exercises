@@ -1,6 +1,5 @@
 import React from "react";
 import Exercise from "../exercise/Exercise";
-import ProgressBar from "./ProgressBar";
 
 import "./ProgressBarExercise.scss"
 
@@ -21,23 +20,43 @@ export default ProgressBarExercise;
 // ----------------------------------------------------------------------------------
 
 const Solution = () => {
+  //Using hooks rather than classes for simplicity
   const [progress, setProgress] = React.useState(0);
-  const [visibility, setProgress] = React.useState("visible");
-  const [opacity, setProgress] = React.useState(1);
-  const [progressTransition, setProgress] = React.useState(0);
-  const [visibilityTransition, setProgress] = React.useState(0);
-  const [opacityTransition, setProgress] = React.useState(0);
+  const [opacity, setOpacity] = React.useState(1);
+  const [progressTransition, setProgressTransition] = React.useState(0);
+  const [opacityTransition, setOpacityTransition] = React.useState(0);
 
   const startRequest = () => {
-    console.log("starting");
+    //Button shouldn't do anything if we're still in a request
+    if(progress !== 0 && progress !== 100) {
+      return null;
+    }
+
+    //'Instantly' reset the progress bar to visible and 0
+    setOpacityTransition(0);
+    setOpacity(1);
+    setProgressTransition(0);
     setProgress(0);
-    fakeRequest(90,15000);
+
+    //TODO: Do this more cleanly, without setTimeout.
+    //'Instantly' isn't instant in react -- wait until the update has rendered
+    setTimeout(() => {
+      setProgressTransition(15);
+      setProgress(90);
+    }, 100);
   }
   
   const finishRequest = () => {
-    console.log("finishing");
-    clearInterval(timer);
+    //Set progress bar to 100% over 1 second
+    setProgressTransition(1);
     setProgress(100);
+
+    //TODO: Also do this without timeouts.
+    //After that one second, fade the bar out over three seconds
+    setTimeout(() => {
+      setOpacityTransition(3);
+      setOpacity(0);
+    },1000);
   }
   
   const startButtonText = () => {
@@ -48,38 +67,9 @@ const Solution = () => {
     }
   }
 
-  const fakeRequest = (targetPercentage, durationInMS) => {
-    let interval = 1000;
-    let startPercentage = progress;
-    let incrementPercentage = (targetPercentage - startPercentage) * (interval/durationInMS);
-    console.log("increment", incrementPercentage);
-    timer = setInterval(() => {
-        console.log("timinggggg: "+progress);
-        /*let newProgress = progress+incrementPercentage;
-        console.log("newprogress",newProgress);
-        if(newProgress >= targetPercentage ) {
-          console.log("doneeee");
-          setProgress(targetPercentage);
-          clearInterval(timer);
-        } else {
-          console.log("increment");
-          setProgress(newProgress);
-        }*/
-        incrementProgress(1);
-      }, 1000);
-  }
-
-  const incrementProgress = (incrementPercentage, delay) => {
-    console.log("incrementing");
-    setProgress(progress+incrementPercentage);
-    //setTimeout(incrementProgress(incrementPercentage, delay), delay);
-  }
-  
   return <div>
-    <ProgressBar progress={progress} />
-    <button className="start-button" onClick={ startRequest }>{ startButtonText() }</button>
-    <button className="finish-button" onClick={ finishRequest }>Finish Request</button>
+    <div data-testid="progress-bar" className="progress-bar" style={{width: progress+"%", opacity: opacity, transition: `width ${progressTransition}s ease, opacity ${opacityTransition}s ease` }}></div>
+    <button data-testid="start-button" className="start-button" onClick={ startRequest }>{ startButtonText() }</button>
+    <button data-testid="finish-button" className="finish-button" onClick={ finishRequest }>Finish Request</button>
   </div>;
 };
-
-

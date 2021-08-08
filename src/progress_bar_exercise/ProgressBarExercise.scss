@@ -1,6 +1,19 @@
 @import "../shared_styles/colors.scss";
 @import "../shared_styles/typography.scss";
 
+
+/*TODO: Should button match (a) or (b)?
+  a) Image as sized on https://github.com/SpiffInc/spiff_react_exercises/issues/1
+  b) Native image: https://user-images.githubusercontent.com/4129513/84980773-30778400-b0f0-11ea-8def-be29766e5c7f.png
+  Assuming (a) because "On hover, button borders should increase to 2px width", but the native image has 2px borders, so increasing requires we start at 1px
+
+  Dimensions of native image:
+  height: 80px;
+  width: 324px;
+  font-size: 17px;
+  border-width: 2px;
+  border-radius: 40px;
+  */
 .start-button {
     @extend .center-align;
     @extend .small-header; //TODO: Font doesn't quite match source image
@@ -10,8 +23,6 @@
     color: $green;
 
     border-style: solid;
-    //Color picked button border color -- 00c1a6
-    //Color picked button font color -- 00c1a6
     border-color: $green;
     border-radius: 20px;
     border-width: 1px;
@@ -28,61 +39,17 @@
 .finish-button {
     @extend .start-button;
 
+    //We're assuming we want to use the pre-defined colors for the application to maintain a common theme
     color: $red;
     border-color: $red;
 }
 
-
-
 .progress-bar {
-    background: linear-gradient(90deg, $red, $sunrise);
-    height: 60px;
-    width: 100%;
-    transition: visibility 3s, opacity 3s, width 1s;
-}
-
-.progress-bar-hidden {
-  visibility: hidden;
-  opacity: 0;
-}
-
-.progress-bar-shown {
-  visibility: visible;
-  opacity: 1;
-}
-
-.progress-bar-container {
-  width: 100%;
-}
-
-
-
-//TODO: Ask client if "at the top of the window" means browser window or the solution container;
-.progress-bar-window {
-    @extend .progress-bar;
-
+    //TODO: Should the bar always go from orange to red, or to only show the full gradient when complete?
+    background: linear-gradient(90deg, $sunrise, $red);
+    height: 6px;
+    //TODO: Does "at the top of the window" mean browser window or the solution container? If the latter, remove these three lines
     position: absolute;
-    top: 10px;
+    top: 0px;
     left: 0px;
-    width: 100%;
-}
-
-
-/*TODO: Double-check that button should match (a) rather than (b)
-  a) Image as sized on https://github.com/SpiffInc/spiff_react_exercises/issues/1
-    Button would be 162x40, border of 1px -- start-button-embedded
-  b) Native image size: https://user-images.githubusercontent.com/4129513/84980773-30778400-b0f0-11ea-8def-be29766e5c7f.png
-    Button would be 324x80, border of 2px -- start-button-native
-  Assuming (a) because "On hover, button borders should increase to 2px width" -- can't increase if already 2px
-  TODO: try transform: scale(.5, .5)
-  */
-.start-button-native {
-  @extend .start-button;
-
-  //Dimensions measured from native image
-  height: 80px;
-  width: 324px;
-  font-size: 17px;
-  border-width: 2px;
-  border-radius: 40px; //Measured from native image
 }
