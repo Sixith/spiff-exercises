@@ -30,14 +30,6 @@ const clickStart = () => {
   });
 }
 
-//Click finish and run all the timers out
-const clickFinish = () => {
-  act(() => {
-    finishButton.click();
-    jest.runAllTimers();
-  });
-}
-
 it('should have a green "Start Request" button', () => {
   expect(startButton).toBeInTheDocument();
   expect(startButton).toHaveTextContent(/^Start Request$/);
