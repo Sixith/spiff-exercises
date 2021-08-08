@@ -44,6 +44,14 @@
     border-color: $red;
 }
 
+.swap-button {
+  @extend .start-button;
+
+  //We're assuming we want to use the pre-defined colors for the application to maintain a common theme
+  color: $purple;
+  border-color: $purple;
+}
+
 .progress-bar {
     //TODO: Should the bar always go from orange to red, or to only show the full gradient when complete?
     background: linear-gradient(90deg, $sunrise, $red);
@@ -52,4 +60,10 @@
     position: absolute;
     top: 0px;
     left: 0px;
+}
+
+.breaking-bar {
+  @extend .progress-bar;
+
+  background: linear-gradient(90deg, $coral, $purple);
 }
